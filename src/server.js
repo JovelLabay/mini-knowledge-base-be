@@ -7,6 +7,19 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Middleware (must come before routes)
+app.use(helmet());
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === "production"
+        ? [process.env.FRONTEND_URL].filter(Boolean)
+        : true,
+    credentials: true,
+  })
+);
+app.use(express.json());
+
 // Initialize routes with error handling
 let routesLoaded = false;
 let routeError = null;
@@ -28,19 +41,6 @@ try {
   console.error("❌ Error loading routes:", error.message);
 }
 
-// Middleware
-app.use(helmet());
-app.use(
-  cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? [process.env.FRONTEND_URL].filter(Boolean)
-        : true,
-    credentials: true,
-  })
-);
-app.use(express.json());
-
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({
@@ -59,11 +59,18 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Generic route
+// Root route
 app.get("*", (req, res) => {
   res.json({
     status: 200,
     message: "Welcome to the Mini Knowledge Base Assistant API",
+    endpoints: [
+      "GET /api/health - Health check",
+      "GET /api/scrape/status - Scrape configuration",
+      "POST /api/scrape - Scrape and index pages",
+      "POST /api/chat - Chat with AI",
+      "GET /api/history - Get chat history",
+    ],
   });
 });
 
@@ -78,12 +85,6 @@ app.use((error, req, res, next) => {
         : "Something went wrong",
   });
 });
-
-// Server startup
-console.log("🚀 Starting server...");
-console.log(`Environment: ${process.env.NODE_ENV}`);
-console.log(`Port: ${PORT}`);
-console.log(`Routes loaded: ${routesLoaded}`);
 
 if (routeError) {
   console.error("Route loading error:", routeError.message);
