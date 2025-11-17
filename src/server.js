@@ -25,20 +25,28 @@ let routesLoaded = false;
 let routeError = null;
 
 try {
-  const scrapeRoutes = require("./routes/scrape");
-  const chatRoutes = require("./routes/chat");
+  // Try loading routes one by one to isolate the error
+  console.log("Loading history routes...");
   const historyRoutes = require("./routes/history");
-
-  // API Routes
-  app.use("/api/scrape", scrapeRoutes);
-  app.use("/api/chat", chatRoutes);
   app.use("/api/history", historyRoutes);
+  console.log("✅ History routes loaded");
+
+  console.log("Loading scrape routes...");
+  const scrapeRoutes = require("./routes/scrape");
+  app.use("/api/scrape", scrapeRoutes);
+  console.log("✅ Scrape routes loaded");
+
+  console.log("Loading chat routes...");
+  const chatRoutes = require("./routes/chat");
+  app.use("/api/chat", chatRoutes);
+  console.log("✅ Chat routes loaded");
 
   routesLoaded = true;
-  console.log("✅ Routes loaded successfully");
+  console.log("✅ All routes loaded successfully");
 } catch (error) {
   routeError = error;
   console.error("❌ Error loading routes:", error.message);
+  console.error("❌ Stack trace:", error.stack);
 }
 
 // Health check endpoint
