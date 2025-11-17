@@ -4,12 +4,29 @@ const helmet = require("helmet");
 
 require("dotenv").config();
 
-const scrapeRoutes = require("./routes/scrape");
-const chatRoutes = require("./routes/chat");
-const historyRoutes = require("./routes/history");
-
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Initialize routes with error handling
+let routesLoaded = false;
+let routeError = null;
+
+try {
+  const scrapeRoutes = require("./routes/scrape");
+  const chatRoutes = require("./routes/chat");
+  const historyRoutes = require("./routes/history");
+
+  // API Routes
+  app.use("/api/scrape", scrapeRoutes);
+  app.use("/api/chat", chatRoutes);
+  app.use("/api/history", historyRoutes);
+
+  routesLoaded = true;
+  console.log("✅ Routes loaded successfully");
+} catch (error) {
+  routeError = error;
+  console.error("❌ Error loading routes:", error.message);
+}
 
 // Middleware
 app.use(helmet());
@@ -24,17 +41,21 @@ app.use(
 );
 app.use(express.json());
 
-// API Routes
-app.use("/api/scrape", scrapeRoutes);
-app.use("/api/chat", chatRoutes);
-app.use("/api/history", historyRoutes);
-
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({
     status: "OK",
     timestamp: new Date().toISOString(),
     service: "Mini Knowledge Base Assistant API",
+    routes: routesLoaded ? "loaded" : "failed",
+    error: routeError ? routeError.message : null,
+    env: {
+      nodeEnv: process.env.NODE_ENV,
+      port: PORT,
+      hasOpenAI: !!process.env.OPENAI_API_KEY,
+      hasPinecone: !!process.env.PINECONE_API_KEY,
+      hasSupabase: !!process.env.SUPABASE_URL,
+    },
   });
 });
 
@@ -58,8 +79,17 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Server logs
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
+// Server startup
+console.log("🚀 Starting server...");
+console.log(`Environment: ${process.env.NODE_ENV}`);
+console.log(`Port: ${PORT}`);
+console.log(`Routes loaded: ${routesLoaded}`);
+
+if (routeError) {
+  console.error("Route loading error:", routeError.message);
+}
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`🏥 Health check available at /api/health`);
 });
