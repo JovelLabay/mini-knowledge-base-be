@@ -93,21 +93,4 @@ router.post("/", async (req, res) => {
   }
 });
 
-/**
- * GET /api/scrape/status
- * Get current scrape status and configuration
- */
-router.get("/status", (req, res) => {
-  const { PAGES_TO_SCRAPE } = require("../utils/scraper");
-
-  res.json({
-    status: "ready",
-    configuration: {
-      targetPages: PAGES_TO_SCRAPE,
-      totalPages: PAGES_TO_SCRAPE.length,
-    },
-    timestamp: new Date().toISOString(),
-  });
-});
-
 module.exports = router;

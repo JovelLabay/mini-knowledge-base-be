@@ -27,8 +27,8 @@ try {
   const historyRoutes = require("../src/routes/history");
   app.use("/api/history", historyRoutes);
 
-  const scrapeRoutes = require("../src/routes/scrape");
-  app.use("/api/scrape", scrapeRoutes);
+  // const scrapeRoutes = require("../src/routes/scrape");
+  // app.use("/api/scrape", scrapeRoutes);
 
   const chatRoutes = require("../src/routes/chat");
   app.use("/api/chat", chatRoutes);
@@ -46,14 +46,6 @@ app.get("/api/health", (req, res) => {
     status: "OK",
     timestamp: new Date().toISOString(),
     service: "Mini Knowledge Base Assistant API",
-  });
-});
-
-// Root route
-app.get("*", (req, res) => {
-  res.json({
-    status: 200,
-    message: "Welcome to the Mini Knowledge Base Assistant API",
   });
 });
 
