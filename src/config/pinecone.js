@@ -1,10 +1,10 @@
-// Lazy load Pinecone to avoid web API issues during module import
-let Pinecone;
-let pinecone;
-let pineconeInitialized = false;
+const { PineconeClient } = require("@pinecone-database/pinecone");
 
-const initializePinecone = () => {
-  if (pineconeInitialized) return pinecone;
+// Initialize Pinecone with older SDK (v2.2.2) compatible with Node.js 18
+let pinecone;
+
+const initializePinecone = async () => {
+  if (pinecone) return pinecone;
 
   try {
     // Check if required environment variables are set
@@ -17,29 +17,24 @@ const initializePinecone = () => {
       return null;
     }
 
-    // Lazy load the Pinecone class
-    if (!Pinecone) {
-      Pinecone = require("@pinecone-database/pinecone").Pinecone;
-    }
-
-    // Initialize Pinecone
-    pinecone = new Pinecone({
+    // Initialize Pinecone with v2 SDK syntax
+    pinecone = new PineconeClient();
+    await pinecone.init({
       apiKey: process.env.PINECONE_API_KEY,
+      environment: process.env.PINECONE_ENVIRONMENT || "gcp-starter",
     });
 
     console.log("✅ Pinecone client initialized successfully");
-    pineconeInitialized = true;
     return pinecone;
   } catch (error) {
     console.error("❌ Error initializing Pinecone:", error.message);
-    pineconeInitialized = true; // Don't keep retrying
     return null;
   }
 };
 
 const getIndex = async () => {
   try {
-    const client = initializePinecone();
+    const client = await initializePinecone();
 
     if (!client) {
       throw new Error(
@@ -47,7 +42,7 @@ const getIndex = async () => {
       );
     }
 
-    const index = client.index(process.env.PINECONE_INDEX_NAME);
+    const index = client.Index(process.env.PINECONE_INDEX_NAME);
 
     // Test the connection with a simple stats call
     try {
