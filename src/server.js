@@ -7,7 +7,7 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware (must come before routes)
+// Middleware
 app.use(helmet());
 app.use(
   cors({
@@ -21,32 +21,23 @@ app.use(
 app.use(express.json());
 
 // Initialize routes with error handling
-let routesLoaded = false;
 let routeError = null;
 
 try {
-  // Try loading routes one by one to isolate the error
-  console.log("Loading history routes...");
   const historyRoutes = require("./routes/history");
   app.use("/api/history", historyRoutes);
-  console.log("✅ History routes loaded");
 
-  console.log("Loading scrape routes...");
   const scrapeRoutes = require("./routes/scrape");
   app.use("/api/scrape", scrapeRoutes);
-  console.log("✅ Scrape routes loaded");
 
-  console.log("Loading chat routes...");
   const chatRoutes = require("./routes/chat");
   app.use("/api/chat", chatRoutes);
-  console.log("✅ Chat routes loaded");
 
   routesLoaded = true;
-  console.log("✅ All routes loaded successfully");
 } catch (error) {
   routeError = error;
-  console.error("❌ Error loading routes:", error.message);
-  console.error("❌ Stack trace:", error.stack);
+  console.error("Error loading routes:", error.message);
+  console.error("Stack trace:", error.stack);
 }
 
 // Health check endpoint
@@ -55,15 +46,6 @@ app.get("/api/health", (req, res) => {
     status: "OK",
     timestamp: new Date().toISOString(),
     service: "Mini Knowledge Base Assistant API",
-    routes: routesLoaded ? "loaded" : "failed",
-    error: routeError ? routeError.message : null,
-    env: {
-      nodeEnv: process.env.NODE_ENV,
-      port: PORT,
-      hasOpenAI: !!process.env.OPENAI_API_KEY,
-      hasPinecone: !!process.env.PINECONE_API_KEY,
-      hasSupabase: !!process.env.SUPABASE_URL,
-    },
   });
 });
 
@@ -72,13 +54,6 @@ app.get("*", (req, res) => {
   res.json({
     status: 200,
     message: "Welcome to the Mini Knowledge Base Assistant API",
-    endpoints: [
-      "GET /api/health - Health check",
-      "GET /api/scrape/status - Scrape configuration",
-      "POST /api/scrape - Scrape and index pages",
-      "POST /api/chat - Chat with AI",
-      "GET /api/history - Get chat history",
-    ],
   });
 });
 
@@ -99,6 +74,6 @@ if (routeError) {
 }
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`✅ Server running on port ${PORT}`);
-  console.log(`🏥 Health check available at /api/health`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Health check available at /api/health`);
 });
