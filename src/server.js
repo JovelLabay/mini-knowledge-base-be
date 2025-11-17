@@ -33,7 +33,7 @@ try {
   const chatRoutes = require("../src/routes/chat");
   app.use("/api/chat", chatRoutes);
 
-  routesLoaded = true;
+  console.log("All routes loaded successfully");
 } catch (error) {
   routeError = error;
   console.error("Error loading routes:", error.message);
