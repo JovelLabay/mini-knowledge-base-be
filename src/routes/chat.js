@@ -1,9 +1,10 @@
 const express = require("express");
+const supabase = require("../config/supabase");
+
 const {
   generateRAGResponse,
   generateSimpleResponse,
 } = require("../utils/chat");
-const supabase = require("../config/supabase");
 
 const router = express.Router();
 

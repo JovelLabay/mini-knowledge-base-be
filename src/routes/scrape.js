@@ -1,4 +1,5 @@
 const express = require("express");
+
 const { scrapeAllPages, chunkContent } = require("../utils/scraper");
 const { generateEmbeddings, upsertVectors } = require("../utils/embeddings");
 

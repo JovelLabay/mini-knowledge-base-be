@@ -24,13 +24,13 @@ app.use(express.json());
 let routeError = null;
 
 try {
-  const historyRoutes = require("./routes/history");
+  const historyRoutes = require("../src/routes/history");
   app.use("/api/history", historyRoutes);
 
-  const scrapeRoutes = require("./routes/scrape");
+  const scrapeRoutes = require("../src/routes/scrape");
   app.use("/api/scrape", scrapeRoutes);
 
-  const chatRoutes = require("./routes/chat");
+  const chatRoutes = require("../src/routes/chat");
   app.use("/api/chat", chatRoutes);
 
   routesLoaded = true;
