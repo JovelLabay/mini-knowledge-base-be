@@ -29,6 +29,15 @@ app.use("/api/scrape", scrapeRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/history", historyRoutes);
 
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    service: "Mini Knowledge Base Assistant API",
+  });
+});
+
 // Generic route
 app.get("*", (req, res) => {
   res.json({
