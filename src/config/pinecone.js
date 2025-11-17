@@ -1,11 +1,6 @@
-const { PineconeClient } = require("@pinecone-database/pinecone");
-
-// Initialize Pinecone with older SDK (v2.2.2) compatible with Node.js 18
-let pinecone;
+const { Pinecone } = require("@pinecone-database/pinecone");
 
 const initializePinecone = async () => {
-  if (pinecone) return pinecone;
-
   try {
     // Check if required environment variables are set
     if (!process.env.PINECONE_API_KEY) {
@@ -18,10 +13,8 @@ const initializePinecone = async () => {
     }
 
     // Initialize Pinecone with v2 SDK syntax
-    pinecone = new PineconeClient();
-    await pinecone.init({
+    const pinecone = new Pinecone({
       apiKey: process.env.PINECONE_API_KEY,
-      environment: process.env.PINECONE_ENVIRONMENT || "gcp-starter",
     });
 
     console.log("✅ Pinecone client initialized successfully");
@@ -42,7 +35,7 @@ const getIndex = async () => {
       );
     }
 
-    const index = client.Index(process.env.PINECONE_INDEX_NAME);
+    const index = client.index(process.env.PINECONE_INDEX_NAME);
 
     // Test the connection with a simple stats call
     try {
@@ -65,4 +58,4 @@ const getIndex = async () => {
   }
 };
 
-module.exports = { pinecone, getIndex };
+module.exports = { initializePinecone, getIndex };
