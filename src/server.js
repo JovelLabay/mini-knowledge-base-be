@@ -27,8 +27,8 @@ try {
   const historyRoutes = require("../src/routes/history");
   app.use("/api/history", historyRoutes);
 
-  // const scrapeRoutes = require("../src/routes/scrape");
-  // app.use("/api/scrape", scrapeRoutes);
+  const scrapeRoutes = require("../src/routes/scrape");
+  app.use("/api/scrape", scrapeRoutes);
 
   const chatRoutes = require("../src/routes/chat");
   app.use("/api/chat", chatRoutes);
