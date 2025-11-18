@@ -7,6 +7,23 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Provide a fallback File implementation for Node versions <20 if builder ignores engines.
+if (typeof File === "undefined") {
+  try {
+    const { Blob } = require("buffer");
+    global.File = class File extends Blob {
+      constructor(parts, name, options = {}) {
+        super(parts, options);
+        this.name = name || "unnamed";
+        this.lastModified = options.lastModified || Date.now();
+      }
+    };
+    console.log("Polyfilled global File class");
+  } catch (e) {
+    console.warn("Unable to polyfill File:", e.message);
+  }
+}
+
 // Middleware
 app.use(helmet());
 app.use(
@@ -24,8 +41,8 @@ app.use(express.json());
 let routeError = null;
 
 try {
-  // const historyRoutes = require("../src/routes/history");
-  // app.use("/api/history", historyRoutes);
+  const historyRoutes = require("../src/routes/history");
+  app.use("/api/history", historyRoutes);
 
   const scrapeRoutes = require("../src/routes/scrape");
   app.use("/api/scrape", scrapeRoutes);
