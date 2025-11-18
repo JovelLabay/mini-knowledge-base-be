@@ -26,15 +26,7 @@ if (typeof File === "undefined") {
 
 // Middleware
 app.use(helmet());
-app.use(
-  cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? [process.env.FRONTEND_URL].filter(Boolean)
-        : true,
-    credentials: true,
-  })
-);
+app.use(cors()); // Allow all origins - no restrictions
 app.use(express.json());
 
 // Initialize routes with error handling
@@ -63,6 +55,17 @@ app.get("/api/health", (req, res) => {
     status: "OK",
     timestamp: new Date().toISOString(),
     service: "Mini Knowledge Base Assistant API",
+    origin: req.headers.origin || "no-origin",
+    environment: process.env.NODE_ENV || "development",
+  });
+});
+
+// CORS test endpoint
+app.get("/api/cors-test", (req, res) => {
+  res.json({
+    message: "CORS test successful",
+    origin: req.headers.origin,
+    timestamp: new Date().toISOString(),
   });
 });
 
