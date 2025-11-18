@@ -60,12 +60,10 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// CORS test endpoint
-app.get("/api/cors-test", (req, res) => {
+// Default route [GET /*]
+app.get("/*", (req, res) => {
   res.json({
-    message: "CORS test successful",
-    origin: req.headers.origin,
-    timestamp: new Date().toISOString(),
+    message: "Welcome to the Mini Knowledge Base Assistant API",
   });
 });
 
